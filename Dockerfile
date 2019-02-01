@@ -3,6 +3,7 @@ FROM httpd:alpine
 COPY ./htaccess /var/www/html/.htaccess
 
 RUN	echo "IncludeOptional conf.d/*.conf" >> /usr/local/apache2/conf/httpd.conf && \
+	sed -e '/Listen/s/^#*/#/' -i /usr/local/apache2/conf/httpd.conf && \
 	mkdir /usr/local/apache2/conf.d && \
 	echo $'LoadModule rewrite_module modules/mod_rewrite.so \n\
 	LoadModule proxy_module modules/mod_proxy.so \n\
@@ -10,9 +11,10 @@ RUN	echo "IncludeOptional conf.d/*.conf" >> /usr/local/apache2/conf/httpd.conf &
 	ServerName localhost \n\
 	DocumentRoot "/var/www/html" \n\
 	ErrorLog /dev/null \n\
+	Listen 80 \n\
 	<VirtualHost *:80> \n\
 		<Directory /var/www/html> \n\
 			AllowOverride FileInfo \n\
 			Require all granted \n\
 		</Directory> \n\
-	</VirtualHost>' >> /usr/local/apache2/conf.d/relay.conf
+	</VirtualHost>' >> /usr/local/apache2/conf.d/redirector.conf
