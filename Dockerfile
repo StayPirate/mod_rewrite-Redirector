@@ -1,5 +1,7 @@
 FROM httpd:alpine
 
+LABEL description="Dockerized image of Apache2 with mod_rewrite, based on AlpineLinux. Use it to redirect/filter HTTP traffic to the C2."
+
 ENV LISTENING_PORT 80
 
 COPY ./htaccess /var/www/html/.htaccess
