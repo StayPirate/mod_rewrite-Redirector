@@ -1,18 +1,20 @@
 FROM httpd:alpine
 
+ENV LISTENING_PORT 80
+
 COPY ./htaccess /var/www/html/.htaccess
 
 RUN	echo "IncludeOptional conf.d/*.conf" >> /usr/local/apache2/conf/httpd.conf && \
 	sed -e '/Listen/s/^#*/#/' -i /usr/local/apache2/conf/httpd.conf && \
 	mkdir /usr/local/apache2/conf.d && \
-	echo $'LoadModule rewrite_module modules/mod_rewrite.so \n\
+	echo -e 'LoadModule rewrite_module modules/mod_rewrite.so \n\
 	LoadModule proxy_module modules/mod_proxy.so \n\
 	LoadModule proxy_http_module modules/mod_proxy_http.so \n\
 	ServerName localhost \n\
 	DocumentRoot "/var/www/html" \n\
 	ErrorLog /dev/null \n\
-	Listen 80 \n\
-	<VirtualHost *:80> \n\
+	Listen '$LISTENING_PORT' \n\
+	<VirtualHost *:'$LISTENING_PORT'> \n\
 		<Directory /var/www/html> \n\
 			AllowOverride FileInfo \n\
 			Require all granted \n\
