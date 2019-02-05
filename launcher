@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Choose which virtualhost run
+if [ "$(ls -A /cert)" ]
+then
+  rm -f /usr/local/apache2/conf.d/http.conf
+else
+  rm -f /usr/local/apache2/conf.d/https.conf
+fi
+
+exec httpd-foreground
