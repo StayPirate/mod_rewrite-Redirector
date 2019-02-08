@@ -21,7 +21,7 @@ In order to run any kind of redirector you need the `.htaccess` file ready on yo
 **Important:** Whatever protocol you will choose (HTTP or HTTPS) the Apache2 instance will be listening to the container internal port 8000, you will then choose on which port bind it using the Docker's publish option `-p` in the command line. 
 - ##### HTTP Redirector
   To run a HTTP redirector which uses a rewrite ruleset in `./.htaccess` use:  
-`docker container run -p 80:8000 -v $(pwd)/.htaccess:/var/www/html/.htaccess StayPirate/mod_rewrite-Redirector`
+`docker container run -d -p 80:8000 -v $(pwd)/.htaccess:/var/www/html/.htaccess tuxmealux/mod_rewrite-redirector`
 - ##### HTTPS Redirector
   To run a HTTPS redirector which uses a rewrite ruleset in `./.htaccess`, you also need valid certificates for the domain/s pointing it. To pass these certificates you need to copy them inside a directory, then pass the directory as a volume `-v` mapping it with the container's internal directory `/cert`. Moreover, to let Apache being able to find these files you have to use the following name convention:
   
@@ -29,7 +29,7 @@ In order to run any kind of redirector you need the `.htaccess` file ready on yo
   - **fullchain.pem** - All certificates, including server certificate (aka leaf certificate or end-entity certificate) for your domain/s name (Apache >= 2.4.8: [SSLCertificateFile](https://httpd.apache.org/docs/2.4/mod/mod_ssl.html#sslcertificatefile) - Nginx: [ssl_certificate](https://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_certificate)). 
 
   Lets assume you have put this two file in `./certificate/privkey.pem` and `./certificate/fullchain.pem`, while your rewrite ruleset is `./.htaccess`. To spin the HTTPS Redirector use:  
- `docker container run -p 443:8000 -v $(pwd)/.htaccess:/var/www/html/.htaccess -v $(pwd)/certificate:/cert StayPirate/mod_rewrite-Redirector`
+ `docker container run -d -p 443:8000 -v $(pwd)/.htaccess:/var/www/html/.htaccess -v $(pwd)/certificate:/cert tuxmealux/mod_rewrite-redirector`
 
 - ##### HTTPS Redirector - The Fast Way
   I created another Docker image to automatically generate valid certificates. Of course, it works only under specific conditions.  
@@ -41,8 +41,8 @@ In order to run any kind of redirector you need the `.htaccess` file ready on yo
   5. Port 80 free for few seconds. The container needs to use port 80 during the authentication process, then it release the port.
  
   If all the above requirement are satisfied, you can quickly spin a HTTPS Redirector using the two following commands:  
- `docker container run --rm -v cert:/cert -p 80:80 StayPirate/CertifyRedirector domain_to_verify.com`  
- `docker container run -p 443:8000 -v $(pwd)/.htaccess:/var/www/html/.htaccess -v cert:/cert StayPirate/mod_rewrite-Redirector`  
+ `docker container run --rm -v cert:/cert -p 80:80 tuxmealux/certify-redirector domain_to_verify.com`  
+ `docker container run -d -p 443:8000 -v $(pwd)/.htaccess:/var/www/html/.htaccess -v cert:/cert tuxmealux/mod_rewrite-redirector`  
  
   As you may have notice, in this case I'm using named volume. The first container uses certbot to generate and verify certificates for **domain_to_verify.com**, it copy them in a volume named `cert` following the name convention mentioned above, then it exits and delete itself. The second command executes the HTTPS redirector mapping the volume named `cert` with the `/cert` directory inside the container, allowing Apache to find the certificates.  
  You can use the first image to verify more than one domain at the same time, please refer to its [page](https://github.com/StayPirate/CertifyRedirector) for more info.
