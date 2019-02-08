@@ -1,6 +1,6 @@
 FROM httpd:alpine
 
-LABEL description="Dockerized image of Apache2 with mod_rewrite, based on AlpineLinux. Use it to redirect/filter HTTP or HTTPS traffic to the C2."
+LABEL description="Apache2 dockerized image with mod_rewrite, based on Alpine Linux. Used to filter and redirect either HTTP or HTTPS traffic through a C2. "
 
 COPY conf.d/ /usr/local/apache2/conf.d/
 COPY launcher /usr/local/bin/
