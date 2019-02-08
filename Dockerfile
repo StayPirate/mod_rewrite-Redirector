@@ -1,4 +1,4 @@
-FROM httpd-custom
+FROM httpd:alpine
 
 LABEL description="Dockerized image of Apache2 with mod_rewrite, based on AlpineLinux. Use it to redirect/filter HTTP or HTTPS traffic to the C2."
 
